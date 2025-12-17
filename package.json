@@ -1,0 +1,330 @@
+{
+  "name": "filename-search",
+  "displayName": "Filename Search",
+  "description": "Adds a searchable sidebar to VSCode that lists filenames in your workspace and lets you open them in the current window.",
+  "version": "0.0.1",
+  "publisher": "potatoqualitee",
+  "author": {
+    "name": "Chrissy LeMaire"
+  },
+  "license": "MIT",
+  "icon": "logo.png",
+  "bugs": {
+    "url": "https://github.com/potatoqualitee/vscode-filename-search/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/potatoqualitee/vscode-filename-search"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "search",
+    "filename",
+    "fuzzy",
+    "filter",
+    "quick open",
+    "everything",
+    "powershell studio",
+    "workspaces"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "filenameSearch.open",
+        "title": "Open Filename Search",
+        "icon": "$(search)"
+      },
+      {
+        "command": "filenameSearch.refresh",
+        "title": "Refresh File Index",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "filenameSearch.openNewWindow",
+        "title": "Open in New Window",
+        "icon": "$(multiple-windows)"
+      },
+      {
+        "command": "filenameSearch.sort",
+        "title": "Sort Files",
+        "icon": "$(sort-precedence)"
+      },
+      {
+        "command": "filenameSearch.searchFilename",
+        "title": "Search Filename"
+      },
+      {
+        "command": "filenameSearch.searchInFiles",
+        "title": "Search in Files"
+      },
+      {
+        "command": "filenameSearch.openSettings",
+        "title": "Open Settings",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "filenameSearch.excludeFolder",
+        "title": "Exclude Folder from Filename Search"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "filenameSearch.open",
+        "key": "ctrl+shift+q",
+        "mac": "cmd+shift+q"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "filenameSearch.refresh",
+          "group": "navigation@1",
+          "when": "view == filenameSearch.searchView"
+        },
+        {
+          "command": "filenameSearch.sort",
+          "group": "navigation@2",
+          "when": "view == filenameSearch.searchView"
+        },
+        {
+          "command": "filenameSearch.openSettings",
+          "group": "navigation@3",
+          "when": "view == filenameSearch.searchView"
+        }
+      ],
+      "touchBar": [
+        {
+          "command": "filenameSearch.open",
+          "group": "display"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "filenameSearch.searchFilename",
+          "group": "4_search",
+          "when": "!explorerResourceIsFolder"
+        },
+        {
+          "command": "filenameSearch.searchInFiles",
+          "group": "4_search",
+          "when": "!explorerResourceIsFolder"
+        },
+        {
+          "command": "filenameSearch.excludeFolder",
+          "group": "4_search",
+          "when": "explorerResourceIsFolder"
+        }
+      ],
+      "editor/title/context": [
+        {
+          "command": "filenameSearch.searchFilename",
+          "group": "1_search"
+        },
+        {
+          "command": "filenameSearch.searchInFiles",
+          "group": "1_search"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "filenameSearch",
+          "title": "Filename Search",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "filenameSearch": [
+        {
+          "type": "webview",
+          "id": "filenameSearch.searchView",
+          "name": "Search",
+          "visibility": "visible"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Filename Search",
+      "properties": {
+        "filenameSearch.excludePatterns": {
+          "type": "array",
+          "default": [
+            "**/node_modules/**",
+            "**/.git/**",
+            "**/dist/**",
+            "**/out/**",
+            "**/build/**",
+            "**/bin/**",
+            "**/obj/**",
+            "**/.vscode-test/**",
+            "**/vendor/**",
+            "**/bower_components/**",
+            "**/__pycache__/**",
+            "**/.pytest_cache/**",
+            "**/venv/**",
+            "**/.venv/**",
+            "**/target/**",
+            "**/.svn/**",
+            "**/.hg/**",
+            "**/.terraform/**",
+            "**/.next/**",
+            "**/.nuxt/**",
+            "**/coverage/**",
+            "**/.nyc_output/**"
+          ],
+          "description": "Glob patterns to exclude from file indexing"
+        },
+        "filenameSearch.useIgnoreFiles": {
+          "type": "boolean",
+          "default": true,
+          "description": "Respect .gitignore files when indexing (requires VS Code's search.useIgnoreFiles to also be enabled)"
+        },
+        "filenameSearch.useExcludeSettings": {
+          "type": "boolean",
+          "default": true,
+          "description": "Respect files.exclude and search.exclude settings when indexing"
+        },
+        "filenameSearch.maxResults": {
+          "type": "number",
+          "default": 100,
+          "description": "Maximum number of search results to display"
+        },
+        "filenameSearch.showPath": {
+          "type": "string",
+          "enum": ["Always", "As needed", "Never"],
+          "default": "As needed",
+          "enumDescriptions": [
+            "Always show file paths",
+            "Only show paths when duplicate filenames exist",
+            "Never show file paths"
+          ],
+          "description": "When to display file paths in search results"
+        },
+        "filenameSearch.searchMode": {
+          "type": "string",
+          "enum": ["fuzzy", "contains", "prefix"],
+          "default": "contains",
+          "enumDescriptions": [
+            "Fuzzy matching - characters can be scattered (e.g., 'mcs' matches 'MyControllerService')",
+            "Contains matching - query must appear as substring (e.g., 'dbadat' matches 'Get-DbaDatabase')",
+            "Prefix matching - filename must start with query"
+          ],
+          "description": "How to match search queries against filenames"
+        },
+        "filenameSearch.caseSensitive": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable case-sensitive search"
+        },
+        "filenameSearch.includeFileTypes": {
+          "type": "string",
+          "default": "",
+          "description": "Only show specific file types (comma-separated, e.g., 'ts, js, ps1'). Leave empty to show all files."
+        },
+        "filenameSearch.codicon": {
+          "type": "string",
+          "default": "file",
+          "description": "The codicon icon to display next to filenames (e.g., 'file', 'file-code', 'file-binary', 'book')"
+        },
+        "filenameSearch.folder": {
+          "type": "string",
+          "default": "",
+          "description": "Custom folder to search instead of the workspace. Leave empty to use workspace folders."
+        },
+        "filenameSearch.depth": {
+          "type": "number",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 20,
+          "description": "Maximum subfolder depth to search (1-20)"
+        },
+        "filenameSearch.searchMinimum": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 1000,
+          "description": "Minimum number of files required before showing the search box. Set to 0 to always show."
+        },
+        "filenameSearch.sortOrder": {
+          "type": "string",
+          "enum": ["name-asc", "name-desc", "path-asc", "path-desc", "modified-desc", "modified-asc"],
+          "default": "name-asc",
+          "enumDescriptions": [
+            "Sort by filename A-Z",
+            "Sort by filename Z-A",
+            "Sort by path A-Z",
+            "Sort by path Z-A",
+            "Sort by modified date (newest first)",
+            "Sort by modified date (oldest first)"
+          ],
+          "description": "How to sort the file list"
+        },
+        "filenameSearch.enableFileOperations": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable file operations (Copy, Cut, Rename, Delete) in context menu. Disable to prevent accidental modifications."
+        },
+        "filenameSearch.customSearchProviders": {
+          "type": "array",
+          "default": [
+            {
+              "folderName": "dbatools",
+              "label": "Search dbatools.io",
+              "urlTemplate": "https://dbatools.io/search/?q=${query}"
+            }
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "folderName": {
+                "type": "string",
+                "description": "Folder name to match (case-insensitive)"
+              },
+              "label": {
+                "type": "string",
+                "description": "Menu item label"
+              },
+              "urlTemplate": {
+                "type": "string",
+                "description": "URL template with ${query} placeholder for the search term"
+              }
+            },
+            "required": ["folderName", "label", "urlTemplate"]
+          },
+          "description": "Custom search providers that appear in context menu when workspace matches folder name. Use ${query} in URL template for the filename (without extension)."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && node esbuild.js",
+    "check-types": "tsc --noEmit",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && node esbuild.js --production",
+    "lint": "eslint src --ext ts"
+  },
+  "dependencies": {
+    "@vscode/codicons": "^0.0.36"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/vscode": "^1.85.0",
+    "@vscode/test-electron": "^2.5.2",
+    "esbuild": "^0.24.2",
+    "eslint": "^9.17.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.7.2"
+  }
+}

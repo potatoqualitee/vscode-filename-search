@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <!-- Abstract search icon - focus on lens with motion lines -->
+
+  <!-- Main search circle - the star of the show -->
+  <circle cx="13" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="2.2"/>
+
+  <!-- Handle nub - just a suggestion -->
+  <line x1="18" y1="17" x2="20.5" y2="19.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+
+  <!-- Bigger zoomies - emphasizing speed -->
+  <line x1="2" y1="8" x2="5.5" y2="8" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+  <line x1="1.5" y1="12" x2="5.5" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+  <line x1="2" y1="16" x2="5.5" y2="16" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+</svg>
